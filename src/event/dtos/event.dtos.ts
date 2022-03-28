@@ -27,6 +27,24 @@ export class EventDtos {
   notes: string;
 }
 
+export class UpdateEventDtos {
+  @IsString()
+  @IsOptional()
+  title: string;
+
+  @IsNumber()
+  @IsOptional()
+  start: Date;
+
+  @IsNumber()
+  @IsOptional()
+  end: Date;
+
+  @IsString()
+  @IsOptional()
+  notes: string;
+}
+
 export class GetEventDtos {
   @IsString()
   @IsOptional()

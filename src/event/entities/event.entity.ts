@@ -26,6 +26,11 @@ export class Event extends Document {
     required: true,
   })
   end: Date;
+
+  @Prop({
+    default: true,
+  })
+  status: boolean;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);
