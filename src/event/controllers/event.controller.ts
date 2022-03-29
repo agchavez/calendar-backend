@@ -7,19 +7,26 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { EventService } from '../services/event.service';
-import { EventDtos, GetEventDtos, UpdateEventDtos } from '../dtos/event.dtos';
+import { EventDtos, UpdateEventDtos } from '../dtos/event.dtos';
 import { MongoIdPipe } from '../../common/mongo-id.pipe';
-import { TokenGuard } from 'src/auth/guards/token.guard';
-
-@UseGuards(TokenGuard)
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+@UseGuards(AuthGuard('jwt'))
 @Controller('event')
 export class EventController {
   constructor(private readonly eventService: EventService) {}
   @Get('/')
-  getEvents(@Query('limit') limit: number, @Query('offset') offset: number) {
+  getEvents(
+    @Query('limit') limit: number,
+    @Query('offset') offset: number,
+    @Req() req: Request,
+  ) {
+    const user = req.user as any;
+
     return this.eventService.getEvents(limit, offset);
   }
 
@@ -29,8 +36,10 @@ export class EventController {
   }
 
   @Post('/')
-  createUser(@Body() event: EventDtos) {
-    return this.eventService.createEvent(event);
+  createUser(@Body() event: EventDtos, @Req() req: Request) {
+    const user = req.user as any;
+
+    return this.eventService.createEvent(event, user.sub);
   }
 
   @Put('/:id')

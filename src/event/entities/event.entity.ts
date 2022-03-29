@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { User } from '../../user/entities/user.entity';
 @Schema()
 export class Event extends Document {
   @Prop({
@@ -31,6 +32,12 @@ export class Event extends Document {
     default: true,
   })
   status: boolean;
+
+  @Prop({
+    ref: User.name,
+    required: true,
+  })
+  user: string;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);

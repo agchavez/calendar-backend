@@ -4,11 +4,14 @@ import { User } from '../entities/user.entity';
 import { Model } from 'mongoose';
 import { UserDtos, loginDtos } from '../dtos/user.dtos';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { PayloadToken } from '../model/token.model';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
+    private jwtService: JwtService,
   ) {}
 
   // Create a new user
@@ -57,6 +60,19 @@ export class AuthService {
       );
     }
     const { password, ...resp } = userDb.toJSON();
-    return resp;
+    const token = await this.generateToken(userDb);
+    return {
+      ...resp,
+      ...token,
+    };
+  }
+
+  // Generar token
+
+  async generateToken(user: User): Promise<any> {
+    const payload: PayloadToken = { email: user.email, sub: user._id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }

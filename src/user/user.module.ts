@@ -5,6 +5,9 @@ import { AuthService } from './services/auth.service';
 import { UserService } from './services/user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entity';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   controllers: [UserController, AuthController],
@@ -16,6 +19,17 @@ import { User, UserSchema } from './entities/user.entity';
         schema: UserSchema,
       },
     ]),
+    PassportModule,
+    JwtModule.registerAsync({
+      useFactory: (configService: ConfigService) => {
+        return {
+          secret: configService.get('JWT_SECRET'),
+          signOptions: { expiresIn: '3d' },
+        };
+      },
+      inject: [ConfigService],
+    }),
   ],
+  exports: [UserService],
 })
 export class UserModule {}
