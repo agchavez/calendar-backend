@@ -25,6 +25,16 @@ export class User extends Document {
   })
   @Exclude()
   password: string;
+
+  @Prop({
+    default: false,
+  })
+  isActive: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.method('toJSON', function () {
+  const { __v, _id, ...object } = this.toObject();
+  return object;
+});

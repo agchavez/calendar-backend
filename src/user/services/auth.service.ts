@@ -6,12 +6,14 @@ import { UserDtos, loginDtos } from '../dtos/user.dtos';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { PayloadToken } from '../model/token.model';
+import { MailService } from '../../mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
     private jwtService: JwtService,
+    private mailservice: MailService,
   ) {}
 
   // Create a new user
@@ -31,6 +33,16 @@ export class AuthService {
     const createdUser = new this.userModel(user);
     const model = await createdUser.save();
     const { password, ...resp } = model.toJSON();
+    const token = await this.jwtService.sign({
+      email: model.email,
+      sub: model._id,
+    });
+    await this.mailservice.sendConfirmationEmail({
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      url: `http://localhost:8080/auth/confirm/${token}`,
+    });
     return resp;
   }
 
@@ -46,6 +58,7 @@ export class AuthService {
         401,
       );
     }
+
     const passwordIsValid = await bcrypt.compare(
       user.password,
       userDb.password,
@@ -59,6 +72,15 @@ export class AuthService {
         401,
       );
     }
+    if (!userDb.isActive) {
+      throw new HttpException(
+        {
+          status: 401,
+          error: 'User not active',
+        },
+        401,
+      );
+    }
     const { password, ...resp } = userDb.toJSON();
     const token = await this.generateToken(userDb);
     return {
@@ -68,11 +90,30 @@ export class AuthService {
   }
 
   // Generar token
-
   async generateToken(user: User): Promise<any> {
     const payload: PayloadToken = { email: user.email, sub: user._id };
     return {
       access_token: this.jwtService.sign(payload),
+    };
+  }
+
+  // Confirmar usuario
+  async confirmUser(token: PayloadToken): Promise<any> {
+    const user = await this.userModel.findOne({ _id: token.sub });
+    if (!user) {
+      throw new HttpException(
+        {
+          status: 401,
+          error: 'User not found',
+        },
+        401,
+      );
+    }
+    user.isActive = true;
+    await user.save();
+    return {
+      status: 200,
+      message: 'User confirmed',
     };
   }
 }

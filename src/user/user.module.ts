@@ -8,11 +8,13 @@ import { User, UserSchema } from './entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   controllers: [UserController, AuthController],
   providers: [AuthService, UserService],
   imports: [
+    MailModule,
     MongooseModule.forFeature([
       {
         name: User.name,
