@@ -31,25 +31,15 @@ export class EventService {
     return event;
   }
 
-  async getEvents(limit: number, offset: number): Promise<any> {
-    return await Promise.all([
-      this.eventModel
-        .find({
-          status: true,
-        })
-        .populate({
-          path: 'user',
-          select: 'firstName lastName email',
-        })
-        .limit(limit)
-        .skip(offset)
-        .exec(),
-      this.eventModel
-        .countDocuments({
-          status: true,
-        })
-        .exec(),
-    ]);
+  async getEvents(limit: number, offset: number, user: any): Promise<any> {
+    return await this.eventModel
+      .find({
+        status: true,
+        user: user.sub,
+      })
+      .limit(limit)
+      .skip(offset)
+      .exec();
   }
 
   async getEventsByUser(userId: string): Promise<Event[]> {

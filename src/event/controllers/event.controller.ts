@@ -25,9 +25,9 @@ export class EventController {
     @Query('offset') offset: number,
     @Req() req: Request,
   ) {
-    const user = req.user as any;
+    const user = req.user;
 
-    return this.eventService.getEvents(limit, offset);
+    return this.eventService.getEvents(limit, offset, user);
   }
 
   @Get('/:id')

@@ -41,3 +41,8 @@ export class Event extends Document {
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);
+
+EventSchema.method('toJSON', function () {
+  const { __v, dateCreated, user, status, ...object } = this.toObject();
+  return object;
+});

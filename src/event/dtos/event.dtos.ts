@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class EventDtos {
   id?: string;
@@ -23,11 +29,11 @@ export class UpdateEventDtos {
   @IsOptional()
   title: string;
 
-  @IsNumber()
+  @IsDate()
   @IsOptional()
   start: Date;
 
-  @IsNumber()
+  @IsDate()
   @IsOptional()
   end: Date;
 

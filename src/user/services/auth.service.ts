@@ -37,7 +37,7 @@ export class AuthService {
       email: model.email,
       sub: model._id,
     });
-    await this.mailservice.sendConfirmationEmail({
+    this.mailservice.sendConfirmationEmail({
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -76,6 +76,7 @@ export class AuthService {
       throw new HttpException(
         {
           status: 401,
+          active: true,
           error: 'User not active',
         },
         401,
@@ -84,7 +85,7 @@ export class AuthService {
     const { password, ...resp } = userDb.toJSON();
     const token = await this.generateToken(userDb);
     return {
-      ...resp,
+      user: resp,
       ...token,
     };
   }
