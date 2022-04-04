@@ -11,8 +11,8 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         console.log(
-          'configService.get(MAIL_URL)',
-          configService.get('MAIL_PASS'),
+          'configService.get(DB_HOST) jklahlkjahldas',
+          configService.get('DB_HOST'),
         );
         return {
           transport: {
