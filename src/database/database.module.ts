@@ -7,6 +7,10 @@ import { MongooseModule } from '@nestjs/mongoose';
   imports: [
     MongooseModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
+        console.log(
+          `MongoDB connection string: ${configService.get('DB_HOST')}`,
+        );
+
         return {
           uri: `mongodb://${configService.get('DB_HOST')}:${configService.get(
             'DB_PORT',

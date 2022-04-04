@@ -2,7 +2,7 @@ version: '2.2'
 services:
   mongo:
       image: mongo:4.4
-      container_name: mongodb
+      container_name: mongo
       volumes:
           - ../mogo_data/db:/data/db
       ports:
@@ -10,3 +10,15 @@ services:
       environment:
           - MONGO_INITDB_ROOT_USERNAME=root
           - MONGO_INITDB_ROOT_PASSWORD=root
+  app:
+    image: node:16.10.0
+    container_name: app
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+        - ../app:/app
+    ports:
+        - 8080:8080
+    depends_on:
+      - mongo
